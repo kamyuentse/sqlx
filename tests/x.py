@@ -184,5 +184,17 @@ for runtime in ["async-std", "tokio", "actix"]:
                 tag=f"mssql_{version}" if runtime == "async-std" else f"mssql_{version}_{runtime}",
             )
 
+        #
+        # opengauss
+        #
+
+        for version in ["2_1_0"]:
+            run(
+                f"cargo test --no-default-features --features macros,offline,any,all-types,opengauss,runtime-{runtime}-{tls}",
+                comment=f"test opengauss {version}",
+                service=f"opengauss_{version}",
+                tag=f"opengauss_{version}" if runtime == "async-std" else f"opengauss_{version}_{runtime}",
+            )
+
 # TODO: Use [grcov] if available
 # ~/.cargo/bin/grcov tests/.cache/target/debug -s sqlx-core/ -t html --llvm --branch -o ./target/debug/coverage

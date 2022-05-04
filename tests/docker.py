@@ -66,5 +66,8 @@ def start_database(driver, database, cwd):
     elif driver.startswith("mssql"):
         return f"mssql://sa:Password123!@127.0.0.1:{port}/{database}"
 
+    elif driver.startwith("opengauss"):
+        return f"postgres://opengauss:password@localhost:{port}/{database}"
+
     else:
         raise NotImplementedError

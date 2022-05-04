@@ -251,7 +251,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        openguass: [2_1_0]
+        opengauss: [2_1_0]
         runtime: [async-std, tokio, actix]
         tls: [native-tls, rustls]
     needs: check
@@ -278,7 +278,7 @@ jobs:
           args: >
             --features opengauss,all-types,runtime-${{ matrix.runtime }}-${{ matrix.tls }}
 
-      - run: docker-compose -f tests/docker-compose.yml run -d -p 5432:5432 --name openguass_${{ matrix.openguass }}
+      - run: docker-compose -f tests/docker-compose.yml run -d -p 5432:5432 --name opengauss_${{ matrix.opengauss }} opengauss_${{ matrix.opengauss }}
       - run: sleep 60
 
       - uses: actions-rs/cargo@v1
