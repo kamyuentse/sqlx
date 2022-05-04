@@ -2,8 +2,8 @@ use std::iter::FromIterator;
 
 use crate::error::Error;
 
-use hmac::{Hmac, Mac, NewMac};
-use md5::Digest;
+use hmac::{Hmac, Mac};
+use digest::Digest;
 use sha1::Sha1;
 use sha2::Sha256;
 
@@ -12,31 +12,25 @@ type HmacSha256 = Hmac<Sha256>;
 
 const SERVER_KEY: &[u8] = b"Sever Key";
 const CLIENT_KEY: &[u8] = b"Client Key";
-const DERIVE_KEY_ROUNDS: u32 = 2048;
+const DEFAULT_OPENGAUSS_KEY_ROUNDS: u32 = 2048;
 
-fn derive_key_pbkdf2<T: AsRef<[u8]>>(
-    password: T,
-    salt_hex: &[u8],
-    rounds: Option<u32>,
-) -> Result<Vec<u8>, Error> {
+fn derive_key_pbkdf2<T>(password: T, salt_hex: &[u8], rounds: Option<u32>) -> Result<Vec<u8>, Error>
+where
+    T: AsRef<[u8]>,
+{
     let salt = hex::decode(salt_hex).map_err(Error::protocol)?;
-    let mut res = vec![0; 32];
-    pbkdf2::pbkdf2::<HmacSha1>(
-        password.as_ref(),
-        &salt,
-        rounds.unwrap_or(DERIVE_KEY_ROUNDS),
-        &mut res,
-    );
+    let rounds = rounds.unwrap_or(DEFAULT_OPENGAUSS_KEY_ROUNDS);
 
-    Ok(res)
+    let mut key = vec![0; 32];
+    pbkdf2::pbkdf2::<HmacSha1>(password.as_ref(), &salt, rounds, &mut key);
+
+    Ok(key)
 }
 
-pub fn rfc5802_algo<T: AsRef<[u8]>>(
-    password: T,
-    random64code: &[u8; 64],
-    token: &[u8; 8],
-    iter: u32,
-) -> Result<Vec<u8>, Error> {
+pub fn rfc5802_algo<T>(password: T, random64code: &[u8; 64], token: &[u8; 8], iter: u32) -> Result<Vec<u8>, Error>
+where
+    T: AsRef<[u8]>
+{
     let key = derive_key_pbkdf2(password, random64code, Some(iter))?;
     let mut mac = HmacSha256::new_from_slice(&key).map_err(Error::protocol)?;
 
@@ -47,7 +41,7 @@ pub fn rfc5802_algo<T: AsRef<[u8]>>(
 
     let client_key = {
         mac.update(CLIENT_KEY);
-        mac.finalize_reset().into_bytes()
+        mac.finalize().into_bytes()
     };
 
     let stored_key = {
