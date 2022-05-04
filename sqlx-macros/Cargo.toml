@@ -65,6 +65,7 @@ mysql = ["sqlx-core/mysql"]
 postgres = ["sqlx-core/postgres"]
 sqlite = ["sqlx-core/sqlite"]
 mssql = ["sqlx-core/mssql"]
+opengauss = ["postgres", "sqlx-core/opengauss"]
 
 # type
 bigdecimal = ["sqlx-core/bigdecimal"]

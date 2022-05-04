@@ -32,14 +32,15 @@ where
     T: AsRef<[u8]>
 {
     let key = derive_key_pbkdf2(password, random64code, Some(iter))?;
-    let mut mac = HmacSha256::new_from_slice(&key).map_err(Error::protocol)?;
 
     let server_key = {
+        let mut mac = HmacSha256::new_from_slice(&key).map_err(Error::protocol)?;
         mac.update(SERVER_KEY);
-        mac.finalize_reset().into_bytes()
+        mac.finalize().into_bytes()
     };
 
     let client_key = {
+        let mut mac = HmacSha256::new_from_slice(&key).map_err(Error::protocol)?;
         mac.update(CLIENT_KEY);
         mac.finalize().into_bytes()
     };
