@@ -21,6 +21,7 @@ use crate::transaction::Transaction;
 
 pub use self::stream::PgStream;
 
+#[cfg(feature = "opengauss")]
 pub(crate) mod auth;
 pub(crate) mod describe;
 mod establish;

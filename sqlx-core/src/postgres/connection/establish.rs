@@ -3,7 +3,9 @@ use crate::HashMap;
 use crate::common::StatementCache;
 use crate::error::Error;
 use crate::io::Decode;
-use crate::postgres::connection::{auth, sasl, stream::PgStream, tls};
+#[cfg(feature = "openguass")]
+use crate::postgres::connection::auth;
+use crate::postgres::connection::{sasl, stream::PgStream, tls};
 use crate::postgres::message::{
     Authentication, BackendKeyData, MessageFormat, Password, ReadyForQuery, Startup,
 };
@@ -102,6 +104,7 @@ impl PgConnection {
                         sasl::authenticate(&mut stream, options, body).await?;
                     }
 
+                    #[cfg(feature = "openguass")]
                     Authentication::Sha256Password(body) => {
                         let x = auth::rfc5802_algo(
                             options.password.as_deref().unwrap_or_default(),

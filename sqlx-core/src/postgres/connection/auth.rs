@@ -2,8 +2,8 @@ use std::iter::FromIterator;
 
 use crate::error::Error;
 
-use hmac::{Hmac, Mac};
 use digest::Digest;
+use hmac::{Hmac, Mac};
 use sha1::Sha1;
 use sha2::Sha256;
 
@@ -27,9 +27,14 @@ where
     Ok(key)
 }
 
-pub fn rfc5802_algo<T>(password: T, random64code: &[u8; 64], token: &[u8; 8], iter: u32) -> Result<Vec<u8>, Error>
+pub fn rfc5802_algo<T>(
+    password: T,
+    random64code: &[u8; 64],
+    token: &[u8; 8],
+    iter: u32,
+) -> Result<Vec<u8>, Error>
 where
-    T: AsRef<[u8]>
+    T: AsRef<[u8]>,
 {
     let key = derive_key_pbkdf2(password, random64code, Some(iter))?;
 

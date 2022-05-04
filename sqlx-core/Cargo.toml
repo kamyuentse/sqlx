@@ -189,5 +189,5 @@ event-listener = "2.5.2"
 pbkdf2 = { version = "0.10.0", features = ["simple", "sha1"], optional = true }
 
 [dev-dependencies]
-sqlx = { version = "0.5.12", path = "..", features = ["postgres", "sqlite", "mysql"] }
+sqlx = { version = "0.5.12", path = "..", features = ["postgres", "sqlite", "mysql", "opengauss"] }
 tokio = { version = "1", features = ["rt"] }
